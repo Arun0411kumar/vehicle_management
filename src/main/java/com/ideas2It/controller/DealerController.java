@@ -11,54 +11,54 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ideas2It.model.Manufacturer;
-import com.ideas2It.service.ManufacturerService;
+import com.ideas2It.model.Dealer;
+import com.ideas2It.service.DealerService;
 import com.ideas2It.util.customException.VehicleManagementException;
 
 @RestController
-public class ManufacturerController {
+public class DealerController {
 	
 	@Autowired
-	private ManufacturerService manufacturerService;
+	private DealerService dealerService;
 	
-	@PostMapping(value = "/createManufacturer")
-	public Manufacturer createManufacturer(@RequestBody Manufacturer manufacturer) {
+	@PostMapping(value = "/createDealer")
+	public Dealer createDealer(@RequestBody Dealer dealer) {
 		try {
-			manufacturer = manufacturerService.createManufacturer(manufacturer);
+			dealer = dealerService.createDealer(dealer);
 		} catch (VehicleManagementException e) {
-			manufacturer = null;
+			dealer = null;
 			e.printStackTrace();
 		}
-		return manufacturer;
+		return dealer;
 	}
 	
-	@GetMapping(value = "/getManufacturers")
-	public List<Manufacturer> getManufacturers() {
-		List<Manufacturer> manufacturers = null;
+	@GetMapping(value = "/getDealers")
+	public List<Dealer> getDealers() {
+		List<Dealer> dealers = null;
         try {
-			manufacturers = manufacturerService.getManufacturers();
+			dealers = dealerService.getDealers();
 		} catch (VehicleManagementException e) {
 			e.printStackTrace();
 		}
-		return manufacturers;
+		return dealers;
 	}
 	
-	@GetMapping(value = "/getManufacturer/{id}")
-	public Manufacturer getManufacturerById(@PathVariable("id") Integer id) {
-		Manufacturer manufacturer = null;
+	@GetMapping(value = "/getDealer/{id}")
+	public Dealer getDealerById(@PathVariable("id") Integer id) {
+		Dealer dealer = null;
 		try {
-			manufacturer = manufacturerService.getManufacturerById(id);
+			dealer = dealerService.getDealerById(id);
 		} catch (VehicleManagementException e) {
 			e.printStackTrace();
 		}
-		return manufacturer;
+		return dealer;
 	}
 	
-	@DeleteMapping(value = "/deleteManufacturer/{id}")
-	public String deleteManufacturerById(@PathVariable("id") Integer id) {
+	@DeleteMapping(value = "/deleteDealer/{id}")
+	public String deleteDealerById(@PathVariable("id") Integer id) {
 		String status = "";
 		try {
-			if (manufacturerService.deleteManufacturerById(id)) {
+			if (dealerService.deleteDealerById(id)) {
 				status = "deleted successfully";
 			}
 		} catch (VehicleManagementException e) {
@@ -68,12 +68,12 @@ public class ManufacturerController {
 		return status;
 	}
 	
-	@PutMapping(value = "/updateManufacturer/{id}")
-	public String updateManufacturerById(@PathVariable("id") Integer id, 
-			@RequestBody Manufacturer manufacturer) {
+	@PutMapping(value = "/updateDealer/{id}")
+	public String updateDealerById(@PathVariable("id") Integer id,
+			@RequestBody Dealer dealer) {
 		String status = "";
 		try {
-			if (manufacturerService.updateManufacturerById(id, manufacturer)) {
+			if (dealerService.updateDealerById(id, dealer)) {
 				status = "updated successfully";
 			}
 		} catch (VehicleManagementException e) {
@@ -83,3 +83,4 @@ public class ManufacturerController {
 		return status;
 	}
 }
+

@@ -7,11 +7,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ideas2It.util.DateUtil;
 import com.ideas2It.util.enumeration.Type; 
 
@@ -33,17 +33,16 @@ public class TwoWheeler extends Vehicle {
     private Type type; 
     
     @JoinColumn(name = "dealer_id", columnDefinition = "int")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Dealer dealer; 
     
     @JoinColumn(name = "manufacturer_id", columnDefinition = "int not null")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Manufacturer manufacturer;
    
     public int getAge(Date dateOfManufacture) {
         return DateUtil.differenceBetweenYear(
-        		dateOfManufacture, 
-        		DateUtil.currentDate);
+        		dateOfManufacture, DateUtil.currentDate);
     }
 
     public byte getNoOfStroke() {
@@ -77,4 +76,22 @@ public class TwoWheeler extends Vehicle {
 	public void setManufacturer(Manufacturer manufacturer) {
 		this.manufacturer = manufacturer;
 	}
+	
+	public String toString() {
+        return "\n--------- TwoWheeler -------------"
+               + "\nvehicle Code       : " + getVehicleCode()
+               + "\nBrand name         : " + getBrandName() 
+               + "\nFuel type          : " + getFuelType() 
+               + "\nMileage            : " + getMileage()  
+               + "\nColor              : " + getColour() 
+               + "\ndateOfManufacture: " + getDateOfManufacture()
+               + "\nEngine stroke      : " + getNoOfStroke()   
+               + "\nTwo wheeler type   : " + getType()
+               + "\nLife time          : " //+ getAge(getDateOfManufacture())
+               + "\ndeleted            : " + isDeleted()
+               + "\ncreated at         : " + getCreatedAt()
+               + "\nLife time          : " + getUpdatedAt()
+               + "\n-------------------------------"
+               + getManufacturer() +"/n" + getDealer() ;
+    }
 }

@@ -13,12 +13,12 @@ import com.ideas2It.model.Manufacturer;
 import com.ideas2It.model.TwoWheeler;
 
 /**
- * This interface handles manufacturer crud operation
+ * This interface handles two wheeler crud operation
  *
  * @version 1.0
  * @author arunkumar
  */
-public interface VehicleService {
+public interface TwoWheelerService {
 
 	/**
 	 * This method create two wheeler object and return it
@@ -65,7 +65,7 @@ public interface VehicleService {
 	 * @throws VehicleManagementException
 	 * @return if value updated then it return true, else it return false
 	 */
-	public boolean updateVehicle(TwoWheeler twoWheeler) throws VehicleManagementException;
+	public boolean updateTwoWheelerByCode(String vehicleCode, TwoWheeler twoWheeler) throws VehicleManagementException;
 
 	/**
 	 * this method get the vehicle details with the given range

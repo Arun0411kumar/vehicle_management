@@ -8,6 +8,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * The Manufacturer class have manufacturer attributes
  * This class contain getter and setter method for manufacturer attributes
@@ -26,6 +28,7 @@ public class Manufacturer extends BaseModel {
     @OneToMany(mappedBy = "manufacturer", 
     		fetch = FetchType.LAZY, 
     		cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<TwoWheeler> twoWheelers;
 
 	public String getName() {

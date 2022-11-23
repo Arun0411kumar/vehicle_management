@@ -56,5 +56,5 @@ public interface DealerService {
 	 * @throws VehicleManagementException
 	 * @return if value updated then it return true, else it return false
 	 */
-	public boolean updateDealer(Dealer dealer) throws VehicleManagementException;
+	public boolean updateDealerById(int dealerId, Dealer dealer) throws VehicleManagementException;
 }
