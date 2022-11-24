@@ -30,9 +30,6 @@ public class TwoWheelerController {
 	
 	@Autowired
 	private TwoWheelerService twoWheelerService; 
-	
-    private ManufacturerService manufacturerService;
-    private DealerService dealerService;
  
 	@PostMapping("/createTwoWheeler")
 	public TwoWheeler createTwoWheeler(@RequestBody TwoWheeler twoWheeler) {
@@ -109,43 +106,26 @@ public class TwoWheelerController {
 	    return twoWheelers;
     }	
 	
-	@RequestMapping(value = "/range", method = RequestMethod.POST)
-	private String retriveTwoWheelersInRange(@RequestParam String start, @RequestParam String end, Model model) {
+	@GetMapping(value = "/range/{start}/{end}")
+	private List<TwoWheeler> retriveTwoWheelersInRange(@PathVariable("start") String start, @PathVariable("end") String end) {
+		List<TwoWheeler> twoWheelers = null;
 			try {
-				model.addAttribute("twoWheelers", twoWheelerService.retriveVehiclesInRange(start, end));
-			} catch (VehicleManagementException e1) {
-				model.addAttribute("status", "No data found");
-				VehicleManagementLogger.displayVehicleError(e1);
-			}		
-			try {
-				new SimpleDateFormat("yyyy-MM-dd").parse(start);
-				return "retriveBetweenDate";
-			} catch (ParseException e) {
-				return "retriveBetweenMileage";
-			}
+				 twoWheelers = twoWheelerService.retriveVehiclesInRange(start, end);
+			} catch (VehicleManagementException e) {
+				VehicleManagementLogger.displayVehicleError(e);
+			}	
+			return twoWheelers;
 	}
 	
-	@RequestMapping(value = "/In", method = RequestMethod.GET)
-	public String getTwoWheelerInCodes(WebRequest webRequest, Model model) {
+	@GetMapping(value = "/In")
+	public List<TwoWheeler> getTwoWheelerInCodes(WebRequest webRequest) {
+		List<TwoWheeler> twoWheelers = null;
 		String[] codes = webRequest.getParameterValues("codes");
 		try {
-			model.addAttribute("twoWheelers", twoWheelerService.getTwoWheelerByCodes(codes));
+			twoWheelers = twoWheelerService.getTwoWheelerByCodes(codes);
 		} catch (VehicleManagementException e) {
-			model.addAttribute("status", "No data found");
 			VehicleManagementLogger.displayVehicleError(e);
 		}
-		return "retriveTwoWheelerInCodes";		
+		return twoWheelers;		
 	}
-	
-	private void getManufacturersAndDealers(Model model, String vehicleCode) throws VehicleManagementException {
-		getManufacturersAndDealers(model); 	
-		TwoWheeler twoWheeler = twoWheelerService.getTwoWheelerByCode(vehicleCode);
-		model.addAttribute("manufacturer", twoWheeler.getManufacturer());
-		model.addAttribute("dealer", twoWheeler.getDealer());
-	}
-	
-    public void getManufacturersAndDealers(Model model) throws VehicleManagementException {
-		model.addAttribute("manufacturers", manufacturerService.getManufacturers());
-		model.addAttribute("dealers", dealerService.getDealers());
-    }
 }

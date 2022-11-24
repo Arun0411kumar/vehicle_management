@@ -92,6 +92,6 @@ public class TwoWheeler extends Vehicle {
                + "\ncreated at         : " + getCreatedAt()
                + "\nLife time          : " + getUpdatedAt()
                + "\n-------------------------------"
-               + getManufacturer() +"/n" + getDealer() ;
+               + getManufacturer() +"\n" + getDealer() ;
     }
 }

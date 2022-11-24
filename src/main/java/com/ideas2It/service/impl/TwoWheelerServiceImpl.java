@@ -1,5 +1,7 @@
 package com.ideas2It.service.impl;
 
+import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -8,15 +10,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ideas2It.dao.TwoWheelerDao;
+import com.ideas2It.model.Dealer;
 import com.ideas2It.model.TwoWheeler;
+import com.ideas2It.service.DealerService;
+import com.ideas2It.service.ManufacturerService;
 import com.ideas2It.service.TwoWheelerService;
+import com.ideas2It.util.DateUtil;
 import com.ideas2It.util.customException.VehicleManagementException;
 
 @Service
 public class TwoWheelerServiceImpl implements TwoWheelerService {
 
 	@Autowired
-	TwoWheelerDao twoWheelerDao;
+	private TwoWheelerDao twoWheelerDao;
+	@Autowired
+    private ManufacturerService manufacturerService;
+	@Autowired
+    private DealerService dealerService;
 
 	/**
 	 * It's sent generated vehicle Code
@@ -28,9 +38,14 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 		return "Vehicle-" + (++code);
 	}
 
-	@Override
+	@Override 
 	public TwoWheeler createTwoWheeler(TwoWheeler twoWheeler) throws VehicleManagementException {
 		twoWheeler.setVehicleCode(generateVehicleCode());
+		twoWheeler.setManufacturer(manufacturerService.getManufacturerById(twoWheeler.getManufacturer().getId()));
+		Dealer dealer = twoWheeler.getDealer();
+		if (null != dealer) {
+			twoWheeler.setDealer(dealerService.getDealerById(dealer.getId()));
+		}
 		twoWheeler = twoWheelerDao.save(twoWheeler);
 		if (null == twoWheeler) {
 			throw new VehicleManagementException("some problem when you create twoWheeler");
@@ -84,41 +99,67 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 	public boolean updateTwoWheelerByCode(String vehicleCode, TwoWheeler twoWheeler) throws VehicleManagementException {
 		TwoWheeler twoWheelerForUpdate = getTwoWheelerByCode(vehicleCode);
 		if (null != twoWheeler && null != twoWheelerForUpdate) {
-			//twoWheelerForUpdate.setBrandName(twoWheeler.getBrandName());
-			//twoWheelerForUpdate.setColour(twoWheeler.getColour());
-			//twoWheelerForUpdate.setDateOfManufacture(twoWheeler);
-			//twoWheeler.setManufacturer(twoWheelerForUpdate.getManufacturer());
-			twoWheelerDao.save(twoWheeler);
+			twoWheelerForUpdate.setBrandName(twoWheeler.getBrandName());
+			twoWheelerForUpdate.setColour(twoWheeler.getColour());
+			twoWheelerForUpdate.setDateOfManufacture(twoWheeler.getDateOfManufacture());
+			twoWheelerForUpdate.setFuelType(twoWheeler.getFuelType());
+			twoWheelerForUpdate.setMileage(twoWheeler.getMileage());
+			twoWheelerForUpdate.setNoOfStroke(twoWheeler.getNoOfStroke());
+			twoWheelerForUpdate.setType(twoWheeler.getType());
+			twoWheelerForUpdate.setManufacturer(manufacturerService.getManufacturerById(twoWheeler.getManufacturer().getId()));
+			Dealer dealer = twoWheeler.getDealer();
+			if (null != dealer) {
+				twoWheelerForUpdate.setDealer(dealerService.getDealerById(dealer.getId()));
+			}
+			twoWheelerDao.save(twoWheelerForUpdate);
 			return true;
 		} else {
-			throw new VehicleManagementException("some problem when you create manufacturer");
+			throw new VehicleManagementException("some problem when you update twoWheeler by code");
 		}
 	}
 
 	@Override
 	public List<TwoWheeler> retriveVehiclesInRange(String start, String end) throws VehicleManagementException {
-		// TODO Auto-generated method stub
-		return null;
+		List<TwoWheeler> twoWheelers = null;
+		try {
+			twoWheelers = twoWheelerDao.retriveTwoWheelersInRange(DateUtil.getDate(start), DateUtil.getDate(end));
+		} catch (ParseException e) {
+			twoWheelers = twoWheelerDao.retriveTwoWheelersInRange(Byte.parseByte(start), Byte.parseByte(end));
+		}
+		if (twoWheelers.isEmpty()) {
+			throw new VehicleManagementException("some problem when you update twoWheeler by code");
+		}
+		return twoWheelers;
 	}
 
 	public List<TwoWheeler> searchTwoWheeler(String value) throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = getTwoWheelers();
-		twoWheelers = twoWheelers.stream()
-		           .filter(twoWheeler -> (twoWheeler.getBrandName().toString().toLowerCase().contains(value)) 
-		        		   || (twoWheeler.getColour().toString().toLowerCase().contains(value)) 
-		        		   || (twoWheeler.getFuelType().toString().toLowerCase().contains(value))
-		        		   || (twoWheeler.getType().toString().toLowerCase().contains(value))
-		        		   || (Byte.toString(twoWheeler.getNoOfStroke()).contains(value))
-		        		   || (Byte.toString(twoWheeler.getMileage()).contains(value))
-		        		   || (twoWheeler.getDateOfManufacture().toString().contains(value)))
-		           .collect(Collectors.toList());
+		twoWheelers = twoWheelers
+				.stream()
+		        .filter(twoWheeler -> (twoWheeler.getBrandName().toString().contains(value.toUpperCase())) 
+		      		   || (twoWheeler.getColour().toString().contains(value.toUpperCase())) 
+		       		   || (twoWheeler.getFuelType().toString().contains(value.toUpperCase()))
+		       		   || (twoWheeler.getType().toString().contains(value.toUpperCase()))
+		      		   || (twoWheeler.getVehicleCode().contains(value.toLowerCase()))
+		       		   || (Byte.toString(twoWheeler.getNoOfStroke()).contains(value))
+		       		   || (Byte.toString(twoWheeler.getMileage()).contains(value))
+             		   || (twoWheeler.getDateOfManufacture().toString().contains(value)))
+	           .collect(Collectors.toList());
+		if (twoWheelers.isEmpty()) {
+			throw new VehicleManagementException("some problem when you update twoWheeler by code");
+		}
 		return twoWheelers;
 	}
 
 	@Override
 	public List<TwoWheeler> getTwoWheelerByCodes(String[] codes) throws VehicleManagementException {
-		// TODO Auto-generated method stub
-		return null;
+		List<TwoWheeler> twoWheelers = null;
+        List<String> codesAsList =  Arrays.asList(codes);
+        twoWheelers = twoWheelerDao.findTwoWheelersInCodes(codesAsList);
+        if (twoWheelers.isEmpty()) {
+			throw new VehicleManagementException("some problem when you update twoWheeler by code");
+        }
+        return twoWheelers;
 	}
 
 }
