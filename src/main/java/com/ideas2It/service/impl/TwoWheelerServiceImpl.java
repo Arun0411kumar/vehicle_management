@@ -77,7 +77,7 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 	@Override
 	public TwoWheeler getTwoWheelerByCode(String vehicleCode) throws VehicleManagementException {
 		TwoWheeler twoWheeler = twoWheelerDao.findByCode(vehicleCode);
-		if (twoWheeler.isDeleted()) {
+		if (null == twoWheeler || twoWheeler.isDeleted()) {
 			throw new VehicleManagementException("some problem when you get twoWheeler by id");
 		}
 		return twoWheeler;

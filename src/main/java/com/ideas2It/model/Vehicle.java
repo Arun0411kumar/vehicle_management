@@ -6,9 +6,9 @@ import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.format.annotation.DateTimeFormat;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 import com.ideas2It.util.enumeration.Brand;
 import com.ideas2It.util.enumeration.Colours;
@@ -26,22 +26,27 @@ public class Vehicle extends BaseModel {
 	@Column(name = "vehicle_code", columnDefinition = "varchar(255)")
     private String vehicleCode;
 	
-	@NotNull
+	@NotBlank(message = "brand name should not be null or empty")
 	@Column(name = "brand_name")
     @Enumerated(EnumType.STRING)
     private Brand brandName;
 	
+	@NotBlank(message = "fuel type should not be null or empty")
 	@Column(name = "fuel_type")
     @Enumerated(EnumType.STRING)
     private FuelType fuelType;
 	
+	@Min(11)
+	@Max(78)
 	@Column(name = "mileage", columnDefinition = "int")
 	private byte mileage;
 	
+	@NotBlank(message = "colour should not be null or empty")
 	@Column(name = "colour")
     @Enumerated(EnumType.STRING)
     private Colours colour;
 	
+	@NotBlank(message = "date of birth should not be null or empty")
     @Column(name = "date_of_manufacture", columnDefinition = "date")
     private Date dateOfManufacture;
 

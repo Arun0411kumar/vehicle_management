@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,9 +24,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "dealers")
 public class Dealer extends BaseModel {
+	
+	@NotNull(message = "name should not be null or empty")
     private String company;
+	
+	@NotNull(message = "name should not be null or empty")
     @Column(name = "stock_available")
     private int stockAvailable;
+	
+	@NotBlank(message = "name should not be null or empty")
     private String city;
     
     @OneToMany(mappedBy = "dealer", 

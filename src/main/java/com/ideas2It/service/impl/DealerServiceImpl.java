@@ -64,8 +64,8 @@ public class DealerServiceImpl implements DealerService {
 	 * {@inheritDoc}
 	 */
 	public Dealer getDealerById(int dealerId) throws VehicleManagementException {
-		Dealer dealer = dealerDao.findById(dealerId).get();
-		if (dealer.isDeleted()) {
+		Dealer dealer = dealerDao.findById(dealerId).orElse(null);
+		if (null == dealer || dealer.isDeleted()) {
 			throw new VehicleManagementException("some problem when you get dealer by id");				
 		}
 		return dealer;

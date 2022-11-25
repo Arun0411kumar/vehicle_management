@@ -16,17 +16,17 @@ import com.ideas2It.model.TwoWheeler;
  */
 public interface TwoWheelerDao extends JpaRepository<TwoWheeler, Integer> {
 	
-    default public TwoWheeler findByCode(String code) {
+    default TwoWheeler findByCode(String code) {
     	char lastChar = code.charAt(code.length() - 1);  
     	int id = lastChar - '0';
-		return findById(id).get();	
+		return findById(id).orElse(null);	
     }
     
     @Query("from TwoWheeler where (dateOfManufacture between :start and :end) and isDeleted = 0")
-    public List<TwoWheeler> retriveTwoWheelersInRange(Date start, Date end);
+    List<TwoWheeler> retriveTwoWheelersInRange(Date start, Date end);
     
     @Query("from TwoWheeler where (mileage between :start and :end) and isDeleted = 0")
-    public List<TwoWheeler> retriveTwoWheelersInRange(Byte start, Byte end);
+    List<TwoWheeler> retriveTwoWheelersInRange(Byte start, Byte end);
 
     @Query("from TwoWheeler where vehicleCode in :codes" )
     List<TwoWheeler> findTwoWheelersInCodes(List<String> codes);

@@ -64,8 +64,8 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 	 * {@inheritDoc}
 	 */
 	public Manufacturer getManufacturerById(int manufacturerId) throws VehicleManagementException {
-		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId).get();
-		if (manufacturer.isDeleted()) {
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId).orElse(null);	    
+		if (null == manufacturer || manufacturer.isDeleted()) {
 			throw new VehicleManagementException("some problem when you get manufacturer by id");				
 		}
 		return manufacturer;
