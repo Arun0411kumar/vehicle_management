@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import com.ideas2It.convertor.Convertor;
+import com.ideas2It.dto.TwoWheelerDto;
 import com.ideas2It.model.TwoWheeler;
 import com.ideas2It.service.TwoWheelerService;
 import com.ideas2It.util.customException.VehicleManagementException;
@@ -24,20 +26,25 @@ public class TwoWheelerController {
 	
 	@Autowired
 	private TwoWheelerService twoWheelerService; 
+	
+	private Convertor convertor = new Convertor();
  
 	@PostMapping("/createTwoWheeler")
-	public TwoWheeler createTwoWheeler(@RequestBody @Valid TwoWheeler twoWheeler) throws VehicleManagementException {
+	public TwoWheelerDto createTwoWheeler(@RequestBody @Valid TwoWheelerDto twoWheelerDto)
+			throws VehicleManagementException {
+		TwoWheeler twoWheeler = null;
 		try {
-			twoWheeler = twoWheelerService.createTwoWheeler(twoWheeler);
+			twoWheeler = twoWheelerService.createTwoWheeler(
+					convertor.convertDtoToEntity(twoWheelerDto));
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return twoWheeler;
+		return convertor.convertEntityToDto(twoWheeler);
 	}
 	
 	@GetMapping(value = "/getTwoWheeler/{code}")
-    public TwoWheeler getManufacturerByCode(@PathVariable("code") String vehicleCode) throws VehicleManagementException {
+    public TwoWheelerDto getManufacturerByCode(@PathVariable("code") String vehicleCode) throws VehicleManagementException {
 		TwoWheeler twoWheeler = null;
     	try {
     		twoWheeler = twoWheelerService.getTwoWheelerByCode(vehicleCode);
@@ -45,11 +52,11 @@ public class TwoWheelerController {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-    	return twoWheeler;
+    	return convertor.convertEntityToDto(twoWheeler);
     }
 
 	@GetMapping(value = "/getTwoWheelers")
-    public List<TwoWheeler> getManufacturers() throws VehicleManagementException {
+    public List<TwoWheelerDto> getManufacturers() throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = null;
     	try {
 			twoWheelers = twoWheelerService.getTwoWheelers();
@@ -57,7 +64,7 @@ public class TwoWheelerController {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-    	return twoWheelers;
+    	return convertor.convertDtoToEntity(twoWheelers);
     }
 	
 	@DeleteMapping(value = "/deleteTwoWheeler/{code}")
@@ -76,11 +83,11 @@ public class TwoWheelerController {
 	
 	@PutMapping(value = "/updateTwoWheeler/{code}")
 	public String updateManufacturerByCode(@PathVariable("code") String vehicleCode, 
-			@RequestBody @Valid TwoWheeler twoWheeler) throws VehicleManagementException {
+			@RequestBody @Valid TwoWheelerDto twoWheelerDto) throws VehicleManagementException {
 		String status = "";
 		try {
-			System.out.println(twoWheeler);
-			if (twoWheelerService.updateTwoWheelerByCode(vehicleCode, twoWheeler)) {
+			if (twoWheelerService.updateTwoWheelerByCode(
+					vehicleCode, convertor.convertDtoToEntity(twoWheelerDto))) {
 				status = "updated successfully";
 			}
 		} catch (VehicleManagementException e) {
@@ -91,7 +98,7 @@ public class TwoWheelerController {
 	}
 	
 	@GetMapping(value = "/searchTwoWheelers/{letters}")
-	private List<TwoWheeler> searchTwoWheelers(@PathVariable("letters") String letters) throws VehicleManagementException {
+	private List<TwoWheelerDto> searchTwoWheelers(@PathVariable("letters") String letters) throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = null;
 	    try {
 			twoWheelers = twoWheelerService.searchTwoWheeler(letters);
@@ -99,11 +106,11 @@ public class TwoWheelerController {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-	    return twoWheelers;
+	    return convertor.convertDtoToEntity(twoWheelers);
     }	
 	
 	@GetMapping(value = "/range/{start}/{end}")
-	private List<TwoWheeler> retriveTwoWheelersInRange(
+	private List<TwoWheelerDto> retriveTwoWheelersInRange(
 			@PathVariable("start") String start, @PathVariable("end") String end) throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = null;
 			try {
@@ -112,11 +119,11 @@ public class TwoWheelerController {
 				VehicleManagementLogger.displayVehicleError(e);
 				throw new VehicleManagementException(e.getMessage());
 			}	
-			return twoWheelers;
+			return convertor.convertDtoToEntity(twoWheelers);
 	}
 	
 	@GetMapping(value = "/In")
-	public List<TwoWheeler> getTwoWheelerInCodes(WebRequest webRequest) throws VehicleManagementException {
+	public List<TwoWheelerDto> getTwoWheelerInCodes(WebRequest webRequest) throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = null;
 		try {
 			twoWheelers = twoWheelerService.getTwoWheelerByCodes(
@@ -125,6 +132,6 @@ public class TwoWheelerController {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return twoWheelers;		
+		return convertor.convertDtoToEntity(twoWheelers);		
 	}
 }

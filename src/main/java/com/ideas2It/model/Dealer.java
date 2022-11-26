@@ -25,14 +25,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "dealers")
 public class Dealer extends BaseModel {
 	
-	@NotNull(message = "name should not be null or empty")
     private String company;
 	
-	@NotNull(message = "name should not be null or empty")
     @Column(name = "stock_available")
     private int stockAvailable;
-	
-	@NotBlank(message = "name should not be null or empty")
     private String city;
     
     @OneToMany(mappedBy = "dealer", 

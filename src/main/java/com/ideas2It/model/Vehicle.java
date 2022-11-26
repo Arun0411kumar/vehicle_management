@@ -26,27 +26,21 @@ public class Vehicle extends BaseModel {
 	@Column(name = "vehicle_code", columnDefinition = "varchar(255)")
     private String vehicleCode;
 	
-	@NotBlank(message = "brand name should not be null or empty")
 	@Column(name = "brand_name")
     @Enumerated(EnumType.STRING)
     private Brand brandName;
 	
-	@NotBlank(message = "fuel type should not be null or empty")
 	@Column(name = "fuel_type")
     @Enumerated(EnumType.STRING)
     private FuelType fuelType;
 	
-	@Min(11)
-	@Max(78)
 	@Column(name = "mileage", columnDefinition = "int")
 	private byte mileage;
 	
-	@NotBlank(message = "colour should not be null or empty")
 	@Column(name = "colour")
     @Enumerated(EnumType.STRING)
     private Colours colour;
 	
-	@NotBlank(message = "date of birth should not be null or empty")
     @Column(name = "date_of_manufacture", columnDefinition = "date")
     private Date dateOfManufacture;
 

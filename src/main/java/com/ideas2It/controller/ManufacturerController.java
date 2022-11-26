@@ -1,5 +1,6 @@
 package com.ideas2It.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ideas2It.convertor.Convertor;
+import com.ideas2It.dto.ManufacturerDto;
 import com.ideas2It.model.Manufacturer;
 import com.ideas2It.service.ManufacturerService;
 import com.ideas2It.util.customException.VehicleManagementException;
@@ -24,22 +27,29 @@ public class ManufacturerController {
 	@Autowired
 	private ManufacturerService manufacturerService;
 	
+	private Convertor convertor = new Convertor();
+	
 	@PostMapping(value = "/createManufacturer")
-	public Manufacturer createManufacturer(@RequestBody @Valid Manufacturer manufacturer) throws VehicleManagementException {
+	public ManufacturerDto createManufacturer(@RequestBody @Valid ManufacturerDto manufacturerDto) 
+			throws VehicleManagementException {
+		Manufacturer manufacturer = null;
 		try {
-			manufacturer = manufacturerService.createManufacturer(manufacturer);
+			manufacturer = manufacturerService.createManufacturer(
+					convertor.convertDtoToEntity(manufacturerDto));
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return manufacturer;
+		return convertor.convertEntityToDto(manufacturer);
 	}
 	
 	@GetMapping(value = "/getManufacturers")
-	public List<Manufacturer> getManufacturers() throws VehicleManagementException {
-		List<Manufacturer> manufacturers = null;
+	public List<ManufacturerDto> getManufacturers() throws VehicleManagementException {
+		List<ManufacturerDto> manufacturers = new ArrayList<>();
         try {
-			manufacturers = manufacturerService.getManufacturers();
+			for (Manufacturer manufacturer: manufacturerService.getManufacturers()) {
+				manufacturers.add(convertor.convertEntityToDto(manufacturer));
+			}
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
@@ -48,7 +58,7 @@ public class ManufacturerController {
 	}
 	
 	@GetMapping(value = "/getManufacturer/{id}")
-	public Manufacturer getManufacturerById(@PathVariable("id") Integer id) throws VehicleManagementException {
+	public ManufacturerDto getManufacturerById(@PathVariable("id") Integer id) throws VehicleManagementException {
 		Manufacturer manufacturer = null;
 		try {
 			manufacturer = manufacturerService.getManufacturerById(id);
@@ -56,7 +66,7 @@ public class ManufacturerController {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return manufacturer;
+		return convertor.convertEntityToDto(manufacturer);
 	}
 	
 	@DeleteMapping(value = "/deleteManufacturer/{id}")
@@ -75,10 +85,11 @@ public class ManufacturerController {
 	
 	@PutMapping(value = "/updateManufacturer/{id}")
 	public String updateManufacturerById(@PathVariable("id") Integer id, 
-			@RequestBody @Valid Manufacturer manufacturer) throws VehicleManagementException {
+			@RequestBody @Valid ManufacturerDto manufacturerDto) throws VehicleManagementException {
 		String status = "";
 		try {
-			if (manufacturerService.updateManufacturerById(id, manufacturer)) {
+			if (manufacturerService.updateManufacturerById(
+					id, convertor.convertDtoToEntity(manufacturerDto))) {
 				status = "updated successfully";
 			}
 		} catch (VehicleManagementException e) {

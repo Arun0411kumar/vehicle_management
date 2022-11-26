@@ -1,5 +1,6 @@
 package com.ideas2It.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ideas2It.convertor.Convertor;
+import com.ideas2It.dto.DealerDto;
 import com.ideas2It.model.Dealer;
 import com.ideas2It.service.DealerService;
 import com.ideas2It.util.customException.VehicleManagementException;
@@ -24,22 +27,28 @@ public class DealerController {
 	@Autowired
 	private DealerService dealerService;
 	
+	private Convertor convertor = new Convertor();
+	
 	@PostMapping(value = "/createDealer")
-	public Dealer createDealer(@RequestBody @Valid Dealer dealer) throws VehicleManagementException {
+	public DealerDto createDealer(@RequestBody @Valid DealerDto dealerDto) 
+			throws VehicleManagementException {
+		Dealer dealer = null;
 		try {
-			dealer = dealerService.createDealer(dealer);
+			dealer = dealerService.createDealer(convertor.convertDtoToEntity(dealerDto));
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return dealer;
+		return convertor.convertEntityToDto(dealer);
 	}
 	
 	@GetMapping(value = "/getDealers")
-	public List<Dealer> getDealers() throws VehicleManagementException {
-		List<Dealer> dealers = null;
+	public List<DealerDto> getDealers() throws VehicleManagementException {
+		List<DealerDto> dealers = new ArrayList<>();
         try {
-			dealers = dealerService.getDealers();
+			for (Dealer dealer : dealerService.getDealers()) {
+				dealers.add(convertor.convertEntityToDto(dealer));
+			}
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
@@ -48,7 +57,7 @@ public class DealerController {
 	}
 	
 	@GetMapping(value = "/getDealer/{id}")
-	public Dealer getDealerById(@PathVariable("id") Integer id) throws VehicleManagementException {
+	public DealerDto getDealerById(@PathVariable("id") Integer id) throws VehicleManagementException {
 		Dealer dealer = null;
 		try {
 			dealer = dealerService.getDealerById(id);
@@ -56,7 +65,7 @@ public class DealerController {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return dealer;
+		return convertor.convertEntityToDto(dealer);
 	}
 	
 	@DeleteMapping(value = "/deleteDealer/{id}")
@@ -75,10 +84,10 @@ public class DealerController {
 	
 	@PutMapping(value = "/updateDealer/{id}")
 	public String updateDealerById(@PathVariable("id") Integer id,
-			@RequestBody @Valid Dealer dealer) throws VehicleManagementException {
+			@RequestBody @Valid DealerDto dealerDto) throws VehicleManagementException {
 		String status = "";
 		try {
-			if (dealerService.updateDealerById(id, dealer)) {
+			if (dealerService.updateDealerById(id, convertor.convertDtoToEntity(dealerDto))) {
 				status = "updated successfully";
 			}
 		} catch (VehicleManagementException e) {

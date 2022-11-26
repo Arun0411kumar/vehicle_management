@@ -27,12 +27,10 @@ import com.ideas2It.util.enumeration.Type;
 @Entity
 @Table(name = "twowheelers")
 public class TwoWheeler extends Vehicle {
-	@NotNull
-	@Pattern(regexp = "^[2]|[4]")
+
     @Column(name = "no_of_stroke", columnDefinition = "int")
     private byte noOfStroke;
     
-	@NotBlank(message = "type could not be null or empty")
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private Type type; 
