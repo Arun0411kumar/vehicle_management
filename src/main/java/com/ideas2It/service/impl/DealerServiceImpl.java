@@ -78,8 +78,7 @@ public class DealerServiceImpl implements DealerService {
 		Dealer dealer = getDealerById(dealerId);
 		if (null != dealer) {
 		    dealer.setDeleted(true);
-		    dealerDao.save(dealer);
-		    return true;
+		    return dealerDao.save(dealer).equals(dealer);
 		} else {
 			throw new VehicleManagementException("some problem when you delete Dealer by id");			
 		}
@@ -94,8 +93,7 @@ public class DealerServiceImpl implements DealerService {
 			dealerForUpdate.setCompany(dealer.getCompany());
 			dealerForUpdate.setCity(dealer.getCity());;
 			dealerForUpdate.setStockAvailable(dealer.getStockAvailable());;
-		    dealerDao.save(dealerForUpdate);
-		    return true;
+		    return dealerDao.save(dealerForUpdate).equals(dealerForUpdate);
 		} else {
 			throw new VehicleManagementException("some problem when you create dealer");			
 		}

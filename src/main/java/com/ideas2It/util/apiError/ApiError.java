@@ -16,9 +16,6 @@ import com.ideas2It.util.customException.VehicleManagementException;
 @RestControllerAdvice
 public class ApiError {
 	Map<String, String> errorAndException = new HashMap<>();
-	
-	//spring.security.user.name = arunkumar
-    //spring.security.user.password = arun0411
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public Map<String, String> InvalidedEntry(MethodArgumentNotValidException ex) {

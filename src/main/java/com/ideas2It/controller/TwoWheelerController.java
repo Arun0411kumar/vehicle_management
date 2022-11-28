@@ -28,6 +28,11 @@ public class TwoWheelerController {
 	private TwoWheelerService twoWheelerService; 
 	
 	private Convertor convertor = new Convertor();
+	
+	@GetMapping("/home")
+	public String display() { 
+		return "welcome to arun world";
+    }
  
 	@PostMapping("/createTwoWheeler")
 	public TwoWheelerDto createTwoWheeler(@RequestBody @Valid TwoWheelerDto twoWheelerDto)

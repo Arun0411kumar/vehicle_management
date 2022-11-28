@@ -78,8 +78,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		Manufacturer manufacturer = getManufacturerById(manufacturerId);
 		if (null != manufacturer) {
 		    manufacturer.setDeleted(true);
-		    manufacturerDao.save(manufacturer);
-		    return true;
+		    return manufacturerDao.save(manufacturer).equals(manufacturer);
 		} else {
 			throw new VehicleManagementException("some problem when you delete manufacturer by id");			
 		}
@@ -94,8 +93,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 			manufacturerForUpdate.setCompany(manufacturer.getCompany());
 			manufacturerForUpdate.setName(manufacturer.getName());
 			manufacturerForUpdate.setInvestment(manufacturer.getInvestment());
-		    manufacturerDao.save(manufacturerForUpdate);
-		    return true;
+		    return manufacturerDao.save(manufacturerForUpdate).equals(manufacturerForUpdate);
 		} else {
 			throw new VehicleManagementException("some problem when you create manufacturer");			
 		}

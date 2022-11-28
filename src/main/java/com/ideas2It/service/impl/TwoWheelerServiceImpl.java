@@ -88,8 +88,7 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 		TwoWheeler twoWheeler = getTwoWheelerByCode(vehicleCode);
 		if (null != twoWheeler) {
 			twoWheeler.setDeleted(true);
-			twoWheelerDao.save(twoWheeler);
-			return true;
+			return twoWheelerDao.save(twoWheeler).equals(twoWheeler);
 		} else {
 			throw new VehicleManagementException("some problem when you delete twoWheeler by id");
 		}
@@ -111,8 +110,7 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 			if (null != dealer) {
 				twoWheelerForUpdate.setDealer(dealerService.getDealerById(dealer.getId()));
 			}
-			twoWheelerDao.save(twoWheelerForUpdate);
-			return true;
+			return twoWheelerDao.save(twoWheelerForUpdate).equals(twoWheelerForUpdate);
 		} else {
 			throw new VehicleManagementException("some problem when you update twoWheeler by code");
 		}
@@ -140,7 +138,7 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 		      		   || (twoWheeler.getColour().toString().contains(value.toUpperCase())) 
 		       		   || (twoWheeler.getFuelType().toString().contains(value.toUpperCase()))
 		       		   || (twoWheeler.getType().toString().contains(value.toUpperCase()))
-		      		   || (twoWheeler.getVehicleCode().contains(value.toLowerCase()))
+		      		   || (twoWheeler.getVehicleCode().toLowerCase().contains(value.toLowerCase()))
 		       		   || (Byte.toString(twoWheeler.getNoOfStroke()).contains(value))
 		       		   || (Byte.toString(twoWheeler.getMileage()).contains(value))
              		   || (twoWheeler.getDateOfManufacture().toString().contains(value)))
