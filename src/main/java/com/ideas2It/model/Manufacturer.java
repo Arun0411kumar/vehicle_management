@@ -32,7 +32,6 @@ public class Manufacturer extends BaseModel {
     @OneToMany(mappedBy = "manufacturer", 
     		fetch = FetchType.LAZY, 
     		cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<TwoWheeler> twoWheelers;
 
 	public String getName() {
