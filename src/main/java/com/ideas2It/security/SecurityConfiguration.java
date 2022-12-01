@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,22 +18,18 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class SecurityConfiguration {
 
-	@Autowired
-	private UserDetailsService userDetailsService;
-
-	AuthenticationManager authenticationManager;
-
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
+	 @Bean
+	 public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+         return authConfig.getAuthenticationManager();
+     }
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		AuthenticationManagerBuilder authenticationManagerBuilder = http
-				.getSharedObject(AuthenticationManagerBuilder.class);
-		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-		authenticationManager = authenticationManagerBuilder.build();
 
 		http.httpBasic().and()
 		        .csrf().disable().authorizeRequests()
@@ -52,9 +48,7 @@ public class SecurityConfiguration {
 				.and().formLogin().defaultSuccessUrl("/home", true)
 
 				// logout
-				.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
-				.authenticationManager(authenticationManager).sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+				.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
 		return http.build();
 	}
 }

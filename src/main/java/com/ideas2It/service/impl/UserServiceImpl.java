@@ -12,7 +12,7 @@ import com.ideas2It.model.User;
 import com.ideas2It.service.UserService;
 
 @Service
-public class UserServiceImpl implements UserDetailsService, UserService {
+public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDao dao;

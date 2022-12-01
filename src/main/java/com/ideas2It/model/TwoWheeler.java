@@ -1,4 +1,4 @@
-package com.ideas2It.model;
+ package com.ideas2It.model;
 
 import java.util.Date;
 
