@@ -1,6 +1,7 @@
 package com.ideas2It.util.jwtUtil;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -16,9 +17,9 @@ public class JwtUtil {
 	public static String generateToken(String userName) {
 		return Jwts.builder()
 		.setSubject(userName)
-		.setIssuer("arun0411")
-		.setIssuedAt(new Date())
-		.setExpiration(new Date(System.currentTimeMillis()))
+		//.setIssuer("arun0411")
+		.setIssuedAt(new Date(System.currentTimeMillis()))
+		.setExpiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(30)))
 		.signWith(SignatureAlgorithm.HS256, key.getBytes())
 		.compact()
 		;
