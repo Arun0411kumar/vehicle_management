@@ -42,6 +42,7 @@ public class User implements UserDetails {
 		this.id = id;
 	}
 
+	@Override
 	public String getUsername() {
 		return username;
 	}
@@ -50,6 +51,7 @@ public class User implements UserDetails {
 		this.username = username;
 	}
 	
+	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -92,8 +94,9 @@ public class User implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> authorities = new ArrayList<>();
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		authorities.add(new SimpleGrantedAuthority(this.role));
+		System.out.println(authorities);
 		return authorities;
 	}
 }

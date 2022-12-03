@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ideas2It.model.User;
 import com.ideas2It.model.UserRequest;
+import com.ideas2It.model.UserResponce;
 import com.ideas2It.service.UserService;
 import com.ideas2It.util.jwtUtil.JwtUtil;
 
@@ -20,8 +21,10 @@ public class UserController {
 	@Autowired
 	private UserService service;
 
-	@Autowired
-	private AuthenticationManager authentication;
+	
+    @Autowired 
+    private AuthenticationManager authentication;
+	 
 
 	@PostMapping("/register")
 	public User createUser(@RequestBody @Valid User user) {
@@ -29,9 +32,9 @@ public class UserController {
 	}
 
 	@PostMapping("/loginUser")
-	public String login(@RequestBody UserRequest user) {
-		authentication.authenticate(new UsernamePasswordAuthenticationToken(
-				user.getUsername(), user.getPassword()));
-		return JwtUtil.generateToken(user.getUsername());
+	public UserResponce login(@RequestBody UserRequest user) {
+        authentication.authenticate(new UsernamePasswordAuthenticationToken(
+		user.getUsername(), user.getPassword()));	 
+		return new UserResponce(JwtUtil.generateToken(user.getUsername()));
 	}
 }

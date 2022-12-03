@@ -3,11 +3,14 @@ package com.ideas2It.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,6 +22,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfiguration {
 
 	@Autowired
+	UserDetailsService userService;
+
+	@Autowired
 	SecurityFilter securityFilter;
 
 	@Bean
@@ -27,33 +33,32 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		return authConfig.getAuthenticationManager();
+	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+		AuthenticationManagerBuilder authenticationManagerBuilder = http
+				.getSharedObject(AuthenticationManagerBuilder.class);
+		authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());
+		return authenticationManagerBuilder.build();
 	}
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.httpBasic().and().cors().and().csrf().disable().authorizeHttpRequests()
-		
-				.antMatchers("/getTwoWheelers", "/getTwoWheeler/{code}", "/searchTwoWheelers/{letters}",
-						"/range/{start}/{end}", "/In", "/createDealer", "/deteleDealer/{id}", "/getDealers",
+		http.httpBasic().disable();
+		http.csrf().disable().authorizeRequests().antMatchers("/loginUser").permitAll()
+				.antMatchers("/createDealer", "/deteleDealer/{id}", "/getDealers",
 						"/getDealer/{id}", "/updateDealer/{id}")
 				.hasAuthority("dealer")
-				.antMatchers("/createTwoWheeler", "/getTwoWheelers", "/deleteTwoWheeler/{code}",
-						"/getTwoWheeler/{code}", "/searchTwoWheelers/{letters}", "/range/{start}/{end}", "/In",
-						"/updateTwoWheeler/{code}", "/createManufacturer", "/getManufacturers", "/getManufacturer/{id}",
-						"/deleteManufacturer/{id}", "/updateManufacturer/{id}")
+				.antMatchers("/createTwoWheeler", "/deleteTwoWheeler/{code}", "/updateTwoWheeler/{code}",
+						"/createManufacturer", "/getManufacturers", "/getManufacturer/{id}", "/deleteManufacturer/{id}",
+						"/updateManufacturer/{id}")
 				.hasAuthority("manufacturer")
+				
+			    .antMatchers("/getTwoWheelers", "/getTwoWheeler/{code}", "/searchTwoWheelers/{letters}",
+					"/range/{start}/{end}", "/In").hasAnyAuthority("manufacturer", "dealer")
 
-				.anyRequest().permitAll()
-
-				// login
-				.and().formLogin().defaultSuccessUrl("/home", true)
-
-				// logout
-				.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.anyRequest().authenticated()
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+		http.csrf().disable();
 		return http.build();
 	}
 }
