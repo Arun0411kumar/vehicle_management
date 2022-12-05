@@ -1,8 +1,12 @@
 package com.ideas2It.model;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotBlank;
-
+/**
+ * The UserRequest class have username and password attributes 
+ * This class contain getter and setter method for user request attributes 
+ *
+ * @version 1.0
+ * @author arunkumar
+ */
 public class UserRequest {
 	
 	private String username;

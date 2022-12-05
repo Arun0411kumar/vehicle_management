@@ -1,16 +1,10 @@
 package com.ideas2It.service;
 
-import java.util.Date;
 import java.util.List;
 
-import com.ideas2It.util.customException.VehicleManagementException;
-import com.ideas2It.util.enumeration.Brand;
-import com.ideas2It.util.enumeration.Colours;
-import com.ideas2It.util.enumeration.FuelType;
-import com.ideas2It.util.enumeration.Type;
-import com.ideas2It.model.Dealer;
-import com.ideas2It.model.Manufacturer;
+import com.ideas2It.dto.TwoWheelerDto;
 import com.ideas2It.model.TwoWheeler;
+import com.ideas2It.util.customException.VehicleManagementException;
 
 /**
  * This interface handles two wheeler crud operation
@@ -27,7 +21,7 @@ public interface TwoWheelerService {
 	 * @throws VehicleManagementException
 	 * @return its return two wheeler object
 	 */
-	public TwoWheeler createTwoWheeler(TwoWheeler twoWheeler)
+	public TwoWheelerDto createTwoWheeler(TwoWheelerDto twoWheelerDto)
 			throws VehicleManagementException;
 
 	/**
@@ -36,7 +30,7 @@ public interface TwoWheelerService {
 	 * @throws VehicleManagementException
 	 * @return its return two wheeler details
 	 */
-	public List<TwoWheeler> getTwoWheelers() throws VehicleManagementException;
+	public List<TwoWheelerDto> getTwoWheelers() throws VehicleManagementException;
 
 	/**
 	 * This method gets user given input whether it's in, then it will return
@@ -46,7 +40,7 @@ public interface TwoWheelerService {
 	 * @throws VehicleManagementException
 	 * @return its return two wheeler object
 	 */
-	public TwoWheeler getTwoWheelerByCode(String vehicleCode) throws VehicleManagementException;
+	public TwoWheelerDto getTwoWheelerByCode(String vehicleCode) throws VehicleManagementException;
 
 	/**
 	 * This method gets user given input whether its in then it will remove object
@@ -65,7 +59,7 @@ public interface TwoWheelerService {
 	 * @throws VehicleManagementException
 	 * @return if value updated then it return true, else it return false
 	 */
-	public boolean updateTwoWheelerByCode(String vehicleCode, TwoWheeler twoWheeler) throws VehicleManagementException;
+	public boolean updateTwoWheelerByCode(String vehicleCode, TwoWheelerDto twoWheelerDto) throws VehicleManagementException;
 
 	/**
 	 * this method get the vehicle details with the given range
@@ -75,7 +69,7 @@ public interface TwoWheelerService {
 	 * @throws VehicleManagementException
 	 * @return it return the given range
 	 */
-	public List<TwoWheeler> retriveVehiclesInRange(String start, String end) throws VehicleManagementException;
+	public List<TwoWheelerDto> retriveVehiclesInRange(String start, String end) throws VehicleManagementException;
 
 	/**
 	 * It's gets value and return that specific searched list
@@ -84,7 +78,7 @@ public interface TwoWheelerService {
 	 * @throws VehicleManagementException
 	 * @return it's return two wheeler list based on value
 	 */
-	public List<TwoWheeler> searchTwoWheeler(String value) throws VehicleManagementException;
+	public List<TwoWheelerDto> searchTwoWheeler(String value) throws VehicleManagementException;
 
 	/**
 	 * this method get the vehicle details with the given Codes
@@ -93,5 +87,5 @@ public interface TwoWheelerService {
 	 * @throws VehicleManagementException
 	 * @return it return the given range
 	 */
-	public List<TwoWheeler> getTwoWheelerByCodes(String codes[]) throws VehicleManagementException;
+	public List<TwoWheelerDto> getTwoWheelerByCodes(String codes[]) throws VehicleManagementException;
 }

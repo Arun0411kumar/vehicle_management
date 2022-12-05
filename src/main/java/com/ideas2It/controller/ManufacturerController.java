@@ -1,76 +1,106 @@
 package com.ideas2It.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ideas2It.convertor.Convertor;
 import com.ideas2It.dto.ManufacturerDto;
-import com.ideas2It.model.Manufacturer;
 import com.ideas2It.service.ManufacturerService;
 import com.ideas2It.util.customException.VehicleManagementException;
 import com.ideas2It.util.logger.VehicleManagementLogger;
 
+/**
+ * The manufacturer controller class that implements an application that Simply
+ * create, view, search, update and delete these operations passed service from
+ * controller class
+ *
+ * @version 1.0
+ * @author arunkumar
+ */
 @RestController
+@RequestMapping("/manufacturer")
 public class ManufacturerController {
 	
 	@Autowired
 	private ManufacturerService manufacturerService;
 	
-	private Convertor convertor = new Convertor();
-	
-	@PostMapping(value = "/createManufacturer")
-	public ManufacturerDto createManufacturer(@RequestBody @Valid ManufacturerDto manufacturerDto) 
+	/**
+	 * Gets the dto of manufacturer and put it into database
+	 * 
+	 * @param ManufacturerDto object
+	 * @return ResponceEntity
+	 * @throws VehicleManagementException
+	 */
+	@PostMapping(value = "/create-manufacturer")
+	public ResponseEntity<ManufacturerDto> createManufacturer(@RequestBody @Valid ManufacturerDto manufacturerDto) 
 			throws VehicleManagementException {
-		Manufacturer manufacturer = null;
 		try {
-			manufacturer = manufacturerService.createManufacturer(
-					convertor.convertDtoToEntity(manufacturerDto));
+			manufacturerDto = manufacturerService.createManufacturer(manufacturerDto);
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return convertor.convertEntityToDto(manufacturer);
+		return new ResponseEntity<>(manufacturerDto, HttpStatus.CREATED);
 	}
 	
-	@GetMapping(value = "/getManufacturers")
-	public List<ManufacturerDto> getManufacturers() throws VehicleManagementException {
-		List<ManufacturerDto> manufacturers = new ArrayList<>();
+	/**
+	 * Display the manufacturers list
+	 * 
+	 * @return ResponseEntity
+	 * @throws VehicleManagementException
+	 */
+	@GetMapping()
+	public ResponseEntity<List<ManufacturerDto>> getManufacturers() throws VehicleManagementException {
+		List<ManufacturerDto> manufacturers = null;
         try {
-			for (Manufacturer manufacturer: manufacturerService.getManufacturers()) {
-				manufacturers.add(convertor.convertEntityToDto(manufacturer));
-			}
+        	manufacturers = manufacturerService.getManufacturers();
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return manufacturers;
+		return new ResponseEntity<>(manufacturers, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/getManufacturer/{id}")
-	public ManufacturerDto getManufacturerById(@PathVariable("id") Integer id) throws VehicleManagementException {
-		Manufacturer manufacturer = null;
+	/**
+	 * Gets a manufacturerId from the user and display the manufacturer
+	 * 
+	 * @param manufacturerId as a integer wrapper class
+	 * @return ResponceEntity
+	 * @throws VehicleManagementException
+	 */
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<ManufacturerDto> getManufacturerById(@PathVariable("id") Integer id) throws VehicleManagementException {
+		ManufacturerDto manufacturerDto = null;
 		try {
-			manufacturer = manufacturerService.getManufacturerById(id);
+			manufacturerDto = manufacturerService.getManufacturerById(id);
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return convertor.convertEntityToDto(manufacturer);
+		return new ResponseEntity<>(manufacturerDto, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "/deleteManufacturer/{id}")
-	public String deleteManufacturerById(@PathVariable("id") Integer id) throws VehicleManagementException {
+	/**
+	 * Gets a manufacturerId from the user and marking as deleted
+	 * 
+	 * @param manufacturerId as a integer wrapper class
+	 * @return ResponceEntity
+	 * @throws VehicleManagementException
+	 */
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<String> deleteManufacturerById(@PathVariable("id") Integer id) throws VehicleManagementException {
 		String status = "";
 		try {
 			if (manufacturerService.deleteManufacturerById(id)) {
@@ -80,22 +110,30 @@ public class ManufacturerController {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return status;
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 	
-	@PutMapping(value = "/updateManufacturer/{id}")
-	public String updateManufacturerById(@PathVariable("id") Integer id, 
+	/**
+	 * This method get manufacturer object If object is null It's throw custom exception
+	 * then it will update the given object
+	 * 
+	 * @param manufacturerId as a integer wrapper class
+	 * @return ResponceEntity
+	 * @throws VehicleManagementException
+	 */
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<String> updateManufacturerById(@PathVariable("id") Integer id, 
 			@RequestBody @Valid ManufacturerDto manufacturerDto) throws VehicleManagementException {
 		String status = "";
 		try {
 			if (manufacturerService.updateManufacturerById(
-					id, convertor.convertDtoToEntity(manufacturerDto))) {
+					id, manufacturerDto)) {
 				status = "updated successfully";
 			}
 		} catch (VehicleManagementException e) {
 			VehicleManagementLogger.displayVehicleError(e);
 			throw new VehicleManagementException(e.getMessage());
 		}
-		return status;
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 }

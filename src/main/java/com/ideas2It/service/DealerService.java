@@ -2,7 +2,7 @@ package com.ideas2It.service;
 
 import java.util.List;
 
-import com.ideas2It.model.Dealer;
+import com.ideas2It.dto.DealerDto;
 import com.ideas2It.util.customException.VehicleManagementException;
 
 /**
@@ -20,7 +20,7 @@ public interface DealerService {
 	 * @throws VehicleManagementException
 	 * @return its return dealer object
 	 */
-	public Dealer createDealer(Dealer dealer) throws VehicleManagementException;
+	public DealerDto createDealer(DealerDto dealerDto) throws VehicleManagementException;
 
 	/**
 	 * This method was return dealer details
@@ -28,7 +28,7 @@ public interface DealerService {
 	 * @throws VehicleManagementException
 	 * @return its return dealer details
 	 */
-	public List<Dealer> getDealers() throws VehicleManagementException;
+	public List<DealerDto> getDealers() throws VehicleManagementException;
 
 	/**
 	 * This method was return dealer details by given id
@@ -36,7 +36,7 @@ public interface DealerService {
 	 * @throws VehicleManagementException
 	 * @return its return dealer details
 	 */
-	public Dealer getDealerById(int dealerId) throws VehicleManagementException;
+	public DealerDto getDealerById(int dealerId) throws VehicleManagementException;
 
 	/**
 	 * This method gets user given input wheather it's in, then it will return
@@ -56,5 +56,5 @@ public interface DealerService {
 	 * @throws VehicleManagementException
 	 * @return if value updated then it return true, else it return false
 	 */
-	public boolean updateDealerById(int dealerId, Dealer dealer) throws VehicleManagementException;
+	public boolean updateDealerById(int dealerId, DealerDto dealerDto) throws VehicleManagementException;
 }

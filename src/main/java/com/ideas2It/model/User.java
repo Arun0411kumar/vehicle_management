@@ -16,6 +16,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * The User class have id, username, password, role attributes 
+ * This class contain getter and setter method for user request attributes 
+ *
+ * @version 1.0
+ * @author arunkumar
+ */
 @Entity
 @Table(name = "user")
 public class User implements UserDetails {

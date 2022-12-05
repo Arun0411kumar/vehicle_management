@@ -17,12 +17,18 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserDao dao;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public User saveUser(User user) {
 	    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	    user.setPassword(encoder.encode(user.getPassword()));
 		return dao.save(user);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user =  dao.findByUsername(username);

@@ -9,8 +9,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ideas2It.convertor.DealerMapper;
+import com.ideas2It.convertor.ManufacturerMapper;
+import com.ideas2It.convertor.TwoWheelerMapper;
 import com.ideas2It.dao.TwoWheelerDao;
-import com.ideas2It.model.Dealer;
+import com.ideas2It.dto.DealerDto;
+import com.ideas2It.dto.TwoWheelerDto;
 import com.ideas2It.model.TwoWheeler;
 import com.ideas2It.service.DealerService;
 import com.ideas2It.service.ManufacturerService;
@@ -18,6 +22,13 @@ import com.ideas2It.service.TwoWheelerService;
 import com.ideas2It.util.DateUtil;
 import com.ideas2It.util.customException.VehicleManagementException;
 
+/**
+ * This class performs create, read, update, delete, search, range operation 
+ * This class pass the data into TwoWheeler dao
+ *
+ * @version 1.0
+ * @author arunkumar
+ */
 @Service
 public class TwoWheelerServiceImpl implements TwoWheelerService {
 
@@ -27,6 +38,8 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
     private ManufacturerService manufacturerService;
 	@Autowired
     private DealerService dealerService;
+	@Autowired
+	private TwoWheelerMapper twoWheelerMapper;
 
 	/**
 	 * It's sent generated vehicle Code
@@ -38,23 +51,25 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 		return "Vehicle-" + (++code);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override 
-	public TwoWheeler createTwoWheeler(TwoWheeler twoWheeler) throws VehicleManagementException {
+	public TwoWheelerDto createTwoWheeler(TwoWheelerDto twoWheelerDto) throws VehicleManagementException {
+		TwoWheeler twoWheeler = twoWheelerMapper.convertDtoToEntity(twoWheelerDto);
 		twoWheeler.setVehicleCode(generateVehicleCode());
-		twoWheeler.setManufacturer(manufacturerService.getManufacturerById(twoWheeler.getManufacturer().getId()));
-		Dealer dealer = twoWheeler.getDealer();
-		if (null != dealer) {
-			twoWheeler.setDealer(dealerService.getDealerById(dealer.getId()));
-		}
 		twoWheeler = twoWheelerDao.save(twoWheeler);
 		if (null == twoWheeler) {
 			throw new VehicleManagementException("some problem when you create twoWheeler");
 		}
-		return twoWheeler;
+		return twoWheelerMapper.convertEntityToDto(twoWheeler);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<TwoWheeler> getTwoWheelers() throws VehicleManagementException {
+	public List<TwoWheelerDto> getTwoWheelers() throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = twoWheelerDao.findAll();
 		List<TwoWheeler> twoWheelersForIterate = new CopyOnWriteArrayList<>();
 		twoWheelersForIterate.addAll(twoWheelers);
@@ -67,25 +82,31 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 			if (twoWheelers.isEmpty()) {
 				throw new VehicleManagementException("some problem when you get twoWheeler list");
 			} else {
-				return twoWheelers;
+				return twoWheelerMapper.convertDtoToEntity(twoWheelers);
 			}
 		} else {
 			throw new VehicleManagementException("some problem when you get twoWheeler list");
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public TwoWheeler getTwoWheelerByCode(String vehicleCode) throws VehicleManagementException {
+	public TwoWheelerDto getTwoWheelerByCode(String vehicleCode) throws VehicleManagementException {
 		TwoWheeler twoWheeler = twoWheelerDao.findByCode(vehicleCode);
 		if (null == twoWheeler || twoWheeler.isDeleted()) {
 			throw new VehicleManagementException("some problem when you get twoWheeler by id");
 		}
-		return twoWheeler;
+		return twoWheelerMapper.convertEntityToDto(twoWheeler);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean deleteTwoWheelerByCode(String vehicleCode) throws VehicleManagementException {
-		TwoWheeler twoWheeler = getTwoWheelerByCode(vehicleCode);
+		TwoWheeler twoWheeler = twoWheelerMapper.convertDtoToEntity(getTwoWheelerByCode(vehicleCode));
 		if (null != twoWheeler) {
 			twoWheeler.setDeleted(true);
 			return twoWheelerDao.save(twoWheeler).equals(twoWheeler);
@@ -94,30 +115,36 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean updateTwoWheelerByCode(String vehicleCode, TwoWheeler twoWheeler) throws VehicleManagementException {
-		TwoWheeler twoWheelerForUpdate = getTwoWheelerByCode(vehicleCode);
-		if (null != twoWheeler && null != twoWheelerForUpdate) {
-			twoWheelerForUpdate.setBrandName(twoWheeler.getBrandName());
-			twoWheelerForUpdate.setColour(twoWheeler.getColour());
-			twoWheelerForUpdate.setDateOfManufacture(twoWheeler.getDateOfManufacture());
-			twoWheelerForUpdate.setFuelType(twoWheeler.getFuelType());
-			twoWheelerForUpdate.setMileage(twoWheeler.getMileage());
-			twoWheelerForUpdate.setNoOfStroke(twoWheeler.getNoOfStroke());
-			twoWheelerForUpdate.setType(twoWheeler.getType());
-			twoWheelerForUpdate.setManufacturer(manufacturerService.getManufacturerById(twoWheeler.getManufacturer().getId()));
-			Dealer dealer = twoWheeler.getDealer();
-			if (null != dealer) {
-				twoWheelerForUpdate.setDealer(dealerService.getDealerById(dealer.getId()));
+	public boolean updateTwoWheelerByCode(String vehicleCode, TwoWheelerDto twoWheelerDto) throws VehicleManagementException {
+		TwoWheeler twoWheeler = twoWheelerMapper.convertDtoToEntity(getTwoWheelerByCode(vehicleCode));
+		if (null != twoWheelerDto && null != twoWheeler) {
+			twoWheeler.setBrandName(twoWheelerDto.getBrandName());
+			twoWheeler.setColour(twoWheelerDto.getColour());
+			twoWheeler.setDateOfManufacture(twoWheelerDto.getDateOfManufacture());
+			twoWheeler.setFuelType(twoWheelerDto.getFuelType());
+			twoWheeler.setMileage(twoWheelerDto.getMileage());
+			twoWheeler.setNoOfStroke(twoWheelerDto.getNoOfStroke());
+			twoWheeler.setType(twoWheelerDto.getType());
+			twoWheeler.setManufacturer(new ManufacturerMapper().convertDtoToEntity(twoWheelerDto.getManufacturer()));
+			DealerDto dealerDto = twoWheelerDto.getDealer();
+			if (null != dealerDto) {
+				twoWheeler.setDealer(new DealerMapper().convertDtoToEntity(dealerDto));
 			}
-			return twoWheelerDao.save(twoWheelerForUpdate).equals(twoWheelerForUpdate);
+			return twoWheelerDao.save(twoWheeler).equals(twoWheeler);
 		} else {
 			throw new VehicleManagementException("some problem when you update twoWheeler by code");
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<TwoWheeler> retriveVehiclesInRange(String start, String end) throws VehicleManagementException {
+	public List<TwoWheelerDto> retriveVehiclesInRange(String start, String end) throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = null;
 		try {
 			twoWheelers = twoWheelerDao.retriveTwoWheelersInRange(DateUtil.getDate(start), DateUtil.getDate(end));
@@ -127,11 +154,14 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 		if (twoWheelers.isEmpty()) {
 			throw new VehicleManagementException("some problem when you update twoWheeler by code");
 		}
-		return twoWheelers;
+		return twoWheelerMapper.convertDtoToEntity(twoWheelers);
 	}
 
-	public List<TwoWheeler> searchTwoWheeler(String value) throws VehicleManagementException {
-		List<TwoWheeler> twoWheelers = getTwoWheelers();
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<TwoWheelerDto> searchTwoWheeler(String value) throws VehicleManagementException {
+		List<TwoWheelerDto> twoWheelers = getTwoWheelers();
 		twoWheelers = twoWheelers
 				.stream()
 		        .filter(twoWheeler -> (twoWheeler.getBrandName().toString().contains(value.toUpperCase())) 
@@ -149,15 +179,18 @@ public class TwoWheelerServiceImpl implements TwoWheelerService {
 		return twoWheelers;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<TwoWheeler> getTwoWheelerByCodes(String[] codes) throws VehicleManagementException {
+	public List<TwoWheelerDto> getTwoWheelerByCodes(String[] codes) throws VehicleManagementException {
 		List<TwoWheeler> twoWheelers = null;
         List<String> codesAsList =  Arrays.asList(codes);
         twoWheelers = twoWheelerDao.findTwoWheelersInCodes(codesAsList);
         if (twoWheelers.isEmpty()) {
 			throw new VehicleManagementException("some problem when you update twoWheeler by code");
         }
-        return twoWheelers;
+        return twoWheelerMapper.convertDtoToEntity(twoWheelers);
 	}
 
 }
